@@ -4,6 +4,9 @@ session_start();
 require_once './config/config.php';
 require_once 'includes/auth_validate.php';
 
+//Include the QR library
+include('phpqrcode/qrlib.php'); 
+
 //Get Input data from query string
 $search_string = filter_input(INPUT_GET, 'search_string');
 $filter_col = filter_input(INPUT_GET, 'filter_col');
@@ -126,17 +129,22 @@ include_once 'includes/header.php';
                 <th>Name</th>
                 <th>Description</th>
                 <th>Photos</th>
+                <th>QR Code</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($items as $row) : ?>
                 <tr>
-	                <td><?php echo $row['item_id'] ?></td>
-	                <td><?php echo htmlspecialchars($row['name']) ?></td>
-	                <td><?php echo htmlspecialchars($row['desc']) ?></td>
-	                <td><?php echo htmlspecialchars($row['photos']) ?> </td>
-	                <td>
+	                <td style="vertical-align:middle"><?php echo $row['item_id'] ?></td>
+	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['name']) ?></td>
+	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['desc']) ?></td>
+	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['photos']) ?> </td>
+                    <?php
+                        QRCode::png('ID'.$row['item_id'], "qr/".$row['item_id'].".png", "M");
+                    ?>
+                    <td style="text-align: center; vertical-align:middle"><a href="qr/<?php echo $row['item_id'] ?>.png"><img width="40" height="40" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
+	                <td style="text-align: center; padding: 5px 5px 5px 10px; vertical-align:middle">
 					<a href="edit_item.php?item_id=<?php echo $row['item_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
 
 					<a href=""  class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['item_id'] ?>" style="margin-right: 8px;"><span class="glyphicon glyphicon-trash"></span></td>
