@@ -81,18 +81,18 @@
                                 </li>
 
                                 <li <?php echo (CURRENT_PAGE =="items.php" || CURRENT_PAGE=="add_item.php") ? 'class="active"' : '' ; ?>>
-                                    <a href="#"><i class="fa fa-user-circle fa-fw"></i> Items<span class="fa arrow"></span></a>
+                                    <a href="#"><i class="fa fa-search fa-fw"></i> Items<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level">
                                         <li>
-                                            <a href="items.php"><i class="fa fa-list fa-fw"></i>List all</a>
+                                            <a href="items.php"><i class="fa fa-list fa-fw"></i> List all</a>
                                         </li>
                                     <li>
-                                        <a href="add_item.php"><i class="fa fa-plus fa-fw"></i>Add New</a>
+                                        <a href="add_item.php"><i class="fa fa-plus fa-fw"></i> Add New</a>
                                     </li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="admin_users.php"><i class="fa fa-users fa-fw"></i> Users</a>
+                                    <a href="admin_users.php"><i class="fa fa-users fa-fw"></i> Admins</a>
                                 </li>
                             </ul>
                         </div>

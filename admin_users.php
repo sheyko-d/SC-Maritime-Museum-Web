@@ -65,7 +65,7 @@ include_once 'includes/header.php';
 <div id="page-wrapper">
 <div class="row">
      <div class="col-lg-6">
-            <h1 class="page-header">Admin users</h1>
+            <h1 class="page-header">Admin Users</h1>
         </div>
         <div class="col-lg-6" style="">
             <div class="page-action-links text-right">

@@ -72,7 +72,7 @@ include_once 'includes/header.php';
     <div class="row">
 
         <div class="col-lg-6">
-            <h1 class="page-header">items</h1>
+            <h1 class="page-header">Items</h1>
         </div>
         <div class="col-lg-6" style="">
             <div class="page-action-links text-right">
@@ -125,26 +125,42 @@ include_once 'includes/header.php';
     <table class="table table-striped table-bordered table-condensed">
         <thead>
             <tr>
-                <th class="header">#</th>
+                <th class="header" style="text-align: center">#</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Photos</th>
-                <th>QR Code</th>
-                <th>Actions</th>
+                <th>Video</th>
+                <th>MP3</th>
+                <th style="text-align: center">QR Code</th>
+                <th style="text-align:center; width:120px">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($items as $row) : ?>
                 <tr>
-	                <td style="vertical-align:middle"><?php echo $row['item_id'] ?></td>
+	                <td style="vertical-align:middle; text-align: center"><?php echo $row['item_id'] ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['name']) ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['desc']) ?></td>
-	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['photos']) ?> </td>
+	                <td style="vertical-align:middle; padding: 10px 10px 10px 3px; 
+    overflow: auto;
+    white-space: nowrap;">
+                        <?php
+                        $photos = json_decode($row['photos'], true);
+                        foreach ($photos as $photo){
+                            echo "<a href='".$photo["url"]."'>
+                                <div style='display:inline'>
+                                    <img height=80 src='".$photo["url"]."' style='margin-left:7px'/>
+                                </div>
+                            </a>";
+                        } ?>
+                    </td>
+                    <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['video']) ? "<a href='".htmlspecialchars($row['video'])."' target='_blank'><img height=80 src='assets/images/video.png' style='margin-left:7px'/></a>":null ?></td>
+	                <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='".htmlspecialchars($row['mp3'])."' target='_blank'><img height=80 src='assets/images/audio.png' style='margin-left:7px'/></a>":null ?></td>
                     <?php
-                        QRCode::png('ID'.$row['item_id'], "qr/".$row['item_id'].".png", "M");
+                        QRCode::png('ID'.$row['item_id'], "qr/".$row['item_id'].".png", "M", 10, 0);
                     ?>
-                    <td style="text-align: center; vertical-align:middle"><a href="qr/<?php echo $row['item_id'] ?>.png"><img width="40" height="40" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
-	                <td style="text-align: center; padding: 5px 5px 5px 10px; vertical-align:middle">
+                    <td style="text-align: center; vertical-align:middle; padding: 10px"><a href="qr/<?php echo $row['item_id'] ?>.png"><img width="80" height="80" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
+	                <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
 					<a href="edit_item.php?item_id=<?php echo $row['item_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
 
 					<a href=""  class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['item_id'] ?>" style="margin-right: 8px;"><span class="glyphicon glyphicon-trash"></span></td>

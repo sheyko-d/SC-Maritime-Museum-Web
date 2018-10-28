@@ -4,6 +4,10 @@ session_start();
 require_once './config/config.php';
 require_once 'includes/auth_validate.php';
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Sanitize if you want
 $item_id = filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT);
 $operation = filter_input(INPUT_GET, 'operation',FILTER_SANITIZE_STRING); 
@@ -78,7 +82,7 @@ $(document).ready(function(){
             },   
         }
     });
-});
+  });
 </script>
 
 <?php include_once 'includes/footer.php'; ?>

@@ -26,7 +26,7 @@ include_once('includes/header.php');
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <i class="fa fa-user fa-5x"></i>
+                            <i class="fa fa-search fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
                             <div class="huge"><?php echo $numItems; ?></div>
