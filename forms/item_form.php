@@ -26,6 +26,18 @@
 <!-- The File Upload validation plugin -->
 <script src="../file-upload/js/jquery.fileupload-validate.js"></script>
 
+
+<style>
+    .ph_container{
+        position:absolute;
+        top:0;
+        left:0;
+        width:80px;
+        height:80px;
+        background:red
+    }
+</style>
+
 <fieldset>
     <div class="form-group">
         <label for="f_name">Name *</label>
@@ -38,20 +50,24 @@
     </div> 
 
     <div class="form-group">
-        <label for="desc">Photos</label><br>
+        <label for="desc">Photos</label>
 
                         <?php
                         $photos = json_decode($item['photos'], true);
+                        $i = 0;
+                        if ($photos){
+                            echo "<br>";
                         foreach ($photos as $photo){
-                            echo "<a href='".$photo["url"]."'>
-                                <div style='display:inline'>
-                                    <img height=80 src='".$photo["url"]."' style='margin-right:7px'/>
-                                </div>
-                            </a>";
-                        } ?>
+                            echo "<span style='height:80; position:relative' id='photo_wrapper".$i."'>
+                                    <img height=80 src='".$photo["url"]."' style='margin-right:7px; margin-bottom:10px'/>
+                                    <img style='position:absolute;right:14px;top:-32px;height:16px;width:16px;cursor:pointer' onClick='deletePhoto(\"".$photo["url"]."\", ".$i."); return false' src='assets/images/delete.png'/>
+                                </span>";
+                                $i++;
+                        }
+                     } ?>
         <br>
         <!-- The fileinput-button span is used to style the file input field as button -->
-        <span class="btn btn-success fileinput-button" style="margin-top:10px">
+        <span class="btn btn-success fileinput-button">
             <i class="glyphicon glyphicon-plus"></i>
             <span>Add files...</span>
             <!-- The file input field used as target for the file upload widget -->
@@ -82,6 +98,19 @@
 
     <script>
     var photos = <?php echo $item["photos"] ? $item["photos"] : "[]" ?>;
+    $("#photos").val(JSON.stringify(photos));
+
+    function deletePhoto($photo, $index){
+        $("#photo_wrapper"+$index).hide()
+
+        for (var i in photos) {
+            if (photos[i].url == $photo){
+                photos.splice(i, 1)
+            }
+        }
+
+        $("#photos").val(JSON.stringify(photos));
+    }
 
     $(function () {
     'use strict';
