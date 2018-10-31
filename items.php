@@ -157,9 +157,9 @@ include_once 'includes/header.php';
                     <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['video']) ? "<a href='".htmlspecialchars($row['video'])."' target='_blank'><img height=80 src='assets/images/video.png' style='margin-left:7px'/></a>":null ?></td>
 	                <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='".htmlspecialchars($row['mp3'])."' target='_blank'><img height=80 src='assets/images/audio.png' style='margin-left:7px'/></a>":null ?></td>
                     <?php
-                        QRCode::png('ID'.$row['item_id'], "qr/".$row['item_id'].".png", "M", 10, 0);
+                        QRCode::png('ID'.$row['item_id'], "qr/".$row['item_id'].".png", "M", 10, 1);
                     ?>
-                    <td style="text-align: center; vertical-align:middle; padding: 10px"><a href="qr/<?php echo $row['item_id'] ?>.png"><img width="80" height="80" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
+                    <td style="text-align: center; vertical-align:middle; padding: 5px"><a href="qr/<?php echo $row['item_id'] ?>.png"><img width="80" height="80" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
 	                <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
 					<a href="edit_item.php?item_id=<?php echo $row['item_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
 
