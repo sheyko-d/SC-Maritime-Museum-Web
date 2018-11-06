@@ -1,6 +1,5 @@
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="file-upload/css/jquery.fileupload.css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
@@ -27,6 +26,10 @@
 <script src="file-upload/js/jquery.fileupload-validate.js"></script>
 
 
+<!-- Latest Sortable -->
+<script src="bower_components/Sortable/Sortable.js"></script>
+
+
 <style>
     .ph_container{
         position:absolute;
@@ -41,66 +44,104 @@
 <fieldset>
     <div class="form-group">
         <label for="f_name">Name *</label>
-          <input type="text" name="name" value="<?php echo $edit ? $item['name'] : ''; ?>" placeholder="Name" class="form-control" required="required" id = "f_name" >
+          <input type="text" name="name" value="<?php echo $edit ? $item['name'] : ''; ?>" placeholder="Name" class="form-control" style="padding: 6px 10px" required="required" id = "f_name" >
     </div>
 
-    <div class="form-group">
-        <label for="desc">Description *</label>
-          <textarea name="desc" placeholder="Description" class="form-control" id="desc"><?php echo ($edit)? $item['desc'] : ''; ?></textarea>
-    </div> 
-
-    <div class="form-group">
+    <!--<div class="form-group" style="display:none">
         <label for="desc">Photos</label>
 
-                        <?php
-                        $photos = json_decode($item['photos'], true);
-                        $i = 0;
-                        if ($photos){
-                            echo "<br>";
-                        foreach ($photos as $photo){
-                            echo "<span style='height:80; position:relative' id='photo_wrapper".$i."'>
-                                    <img height=80 src='".$photo["url"]."' style='margin-right:7px; margin-bottom:10px'/>
-                                    <img style='position:absolute;right:14px;top:-32px;height:16px;width:16px;cursor:pointer' onClick='deletePhoto(\"".$photo["url"]."\", ".$i."); return false' src='assets/images/delete.png'/>
-                                </span>";
-                                $i++;
-                        }
-                     } ?>
-        <br>
-        <!-- The fileinput-button span is used to style the file input field as button -->
-        <span class="btn btn-success fileinput-button">
-            <i class="glyphicon glyphicon-plus"></i>
-            <span>Add files...</span>
-            <!-- The file input field used as target for the file upload widget -->
-            <input id="fileupload" type="file" name="files[]" multiple>
-        </span>
-        <br>
-        <br>
-        <!-- The container for the uploaded files -->
-        <div id="files" class="files"></div>
-        <!-- The global progress bar -->
-        <div id="progress" class="progress">
-            <div class="progress-bar progress-bar-success"></div>
-        </div>
+                        <?php/*
+$photos = json_decode($item['photos'], true);
+$i = 0;
+if ($photos) {
+echo "<br>";
+foreach ($photos as $photo) {
+echo "<span style='height:80; position:relative' id='photo_wrapper" . $i . "'>
+<img height=80 src='" . $photo["url"] . "' style='margin-right:7px; margin-bottom:10px'/>
+<img style='position:absolute;right:14px;top:-32px;height:16px;width:16px;cursor:pointer' onClick='deletePhoto(\"" . $photo["url"] . "\", " . $i . "); return false' src='assets/images/delete.png'/>
+</span>";
+$i++;
+}
+}*/?>
 
-        <input type="hidden" name="photos" id="photos" />
+    </div>-->
+
+    <div class="form-group">
+        <label for="mp3">Content</label>
+        <br>
+        <span class="btn btn-success fileinput-button" onClick="addText()">
+            <i class="glyphicon glyphicon-align-left"></i>
+            <span>&nbsp;Add Text</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="addtext" type="button">
+        </span>
+        <span class="btn btn-success fileinput-button" onClick="addPhoto()">
+            <i class="glyphicon glyphicon-picture"></i>
+            <span>&nbsp;Add Photo</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="addtext" type="button">
+        </span>
+
+        <div id="listWithHandle" class="list-group" style="margin-top:10px">
+            <?php
+if ($edit && $item["content"]) {
+    $content = json_decode($item["content"], true);
+    $i = 0;
+    foreach ($content as $part) {
+        if ($part["type"] == "desc") {
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0">' . $part["text"] . '</textarea></div></div>';
+        } else if ($part["type"] == "img") {
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><div id="files' . $i . '" class="files"><div><p><a target="_blank" href="' . $part["url"] . '"><img width="80" height="80" src=' . $part["url"] . '></img></a><br><input style="margin-top:10px" class="form-control caption" value="' . $part["caption"] . '" placeholder="Enter photo name…"></p></div></div></div></div>';
+        }
+        $i++;
+    }
+}
+?>
+        </div>
     </div>
-    
+
+    <input type="hidden" name="content" id="content" />
+
     <div class="form-group">
         <label for="mp3">Audio</label>
-            <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste an MP3 link (or upload)" class="form-control" id="email">
+            <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste an MP3 link (or upload)" class="form-control" style="padding: 6px 10px" id="audio">
     </div>
 
     <div class="form-group">
         <label for="video">Video</label>
-            <input name="video" value="<?php echo $edit ? $item['video'] : ''; ?>" placeholder="Paste a YouTube video link" class="form-control"  type="text" id="phone">
+            <input name="video" value="<?php echo $edit ? $item['video'] : ''; ?>" placeholder="Paste a YouTube video link" class="form-control" style="padding: 6px 10px" type="text" id="video">
     </div>
 
 
     <script>
-    var photos = <?php echo $item["photos"] ? $item["photos"] : "[]" ?>;
-    $("#photos").val(JSON.stringify(photos));
+    function toggleItem(item){
+        $(item).parent().find(".listHiddenContainer").toggle()
+    }
 
-    function deletePhoto($photo, $index){
+    function deleteItem(item){
+        $(item).parent().remove()
+    }
+
+    function addText(){
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-caret-down" style="float:right;padding:5px;cursor:pointer" onClick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0"></textarea></div></div>')
+    }
+
+    function addPhoto(){
+        var index = $("#listWithHandle").children().length;
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-caret-down" style="float:right;padding:5px;cursor:pointer" onClick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><span class="btn btn-success fileinput-button" id="button'+index+'"><i class="glyphicon glyphicon-plus"></i><span>&nbsp;Upload File...</span><input id="fileupload'+index+'" type="file" name="files[]" multiple></span><div id="files'+index+'" class="files"></div><div id="progress'+index+'" class="progress" style="margin-bottom:10px;display:none"><div class="progress-bar progress-bar-success"></div></div></div></div>');
+        initUploadButton(index)
+    }
+
+    // List with handle
+    Sortable.create(listWithHandle, {
+        handle: '.drag-handle',
+        animation: 150
+    });
+
+    var content = <?php echo $item["content"] ? $item["content"] : "[]" ?>;
+    $("#content").val(JSON.stringify(content));
+
+    /*function deletePhoto($photo, $index){
         $("#photo_wrapper"+$index).hide()
 
         for (var i in photos) {
@@ -110,15 +151,15 @@
         }
 
         $("#photos").val(JSON.stringify(photos));
-    }
+    }*/
 
-    $(function () {
-    'use strict';
+    function initUploadButton(i){
     // Change this to the location of your server-side upload handler:
     var url = 'file-upload/server/php/',
         uploadButton = $('<button/>')
-            .addClass('btn btn-primary')
+            .addClass('btn btn-primary2')
             .prop('disabled', true)
+            .prop('id', "button"+i)
             .text('Processing...')
             .on('click', function () {
                 var $this = $(this),
@@ -134,29 +175,26 @@
                     $this.remove();
                 });
             });
-    $('#fileupload').fileupload({
+    $('#fileupload'+i).fileupload({
         url: url,
         dataType: 'json',
         autoUpload: true,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
         maxFileSize: 999000,
+        imageMaxHeight: 1000,
         // Enable image resizing, except for Android and Opera,
         // which actually support image resizing, but fail to
         // send Blob objects via XHR requests:
         disableImageResize: /Android(?!.*Chrome)|Opera/
             .test(window.navigator.userAgent),
-        previewMaxHeight: 150,
+        previewMinHeight: 1000,
         previewCrop: false
     }).on('fileuploadadd', function (e, data) {
-        data.context = $('<div/>').appendTo('#files');
+        data.context = $('<div/>').appendTo('#files'+i);
         $.each(data.files, function (index, file) {
             var node = $('<p/>')
-                    .append($('<span/>').text(file.name));
-            if (!index) {
-                node
-                    .append('<br>')
-                    
-            }
+                    .append($('<input/>').attr("style", "margin-top:10px").attr("class", "form-control caption").attr("value", file.name.replace(".png", "")).attr("placeholder", "Enter photo name…"));
+
             node.appendTo(data.context);
         });
     }).on('fileuploadprocessalways', function (e, data) {
@@ -167,6 +205,8 @@
             node
                 .prepend('<br>')
                 .prepend(file.preview);
+            $("#button"+i).hide()
+            $('#progress'+i).show();
         }
         if (file.error) {
             node
@@ -180,7 +220,7 @@
         }
     }).on('fileuploadprogressall', function (e, data) {
         var progress = parseInt(data.loaded / data.total * 100, 10);
-        $('#progress .progress-bar').css(
+        $('#progress'+i+' .progress-bar').css(
             'width',
             progress + '%'
         );
@@ -190,12 +230,8 @@
                 var link = $('<a>')
                     .attr('target', '_blank')
                     .prop('href', file.url);
-                $(data.context.children()[index])
+                $(data.context.children()[index]).find("canvas")
                     .wrap(link);
-                    
-        photos.push({url: file.url});
-        $("#photos").val(JSON.stringify(photos));
-
             } else if (file.error) {
                 var error = $('<span class="text-danger"/>').text(file.error);
                 $(data.context.children()[index])
@@ -204,8 +240,6 @@
             }
         });
     }).on('fileuploadfail', function (e, data) {
-        alert(e)
-        alert(data)
         $.each(data.files, function (index) {
             var error = $('<span class="text-danger"/>').text('File upload failed.');
             $(data.context.children()[index])
@@ -214,11 +248,36 @@
         });
     }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
-});
+    }
+
+    function submitForm(){
+        var content = []
+        $("#listWithHandle").children().each(function () {
+            // Check if content type is description (true) or photo (false)
+            if ($(this).find("#description").length > 0){
+                if ($(this).find("#description").val()){
+                    content.push({
+                        type: "desc",
+                        text: $(this).find("#description").val()
+                    })
+                }
+            } else {
+                if ($(this).find("a").length > 0){
+                    content.push({
+                        type: "img",
+                        url: $(this).find("a").attr("href"),
+                        caption: $(this).find(".caption").val()
+                    })
+                }
+            }
+        });
+        console.log(content)
+        $("#content").val(JSON.stringify(content));
+    }
     </script>
 
     <div class="form-group text-center">
         <label></label>
-        <button type="submit" class="btn btn-warning" >Save <span class="glyphicon glyphicon-send"></span></button>
+        <button type="submit" onClick="submitForm()" class="btn btn-warning" >Save <span class="glyphicon glyphicon-send"></span></button>
     </div>
 </fieldset>
