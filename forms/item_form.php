@@ -24,6 +24,9 @@
 <script src="file-upload/js/jquery.fileupload-video.js"></script>
 <!-- The File Upload validation plugin -->
 <script src="file-upload/js/jquery.fileupload-validate.js"></script>
+<script src="js/jQueryRotate.js"></script>
+<script src="js/simpleUpload.min.js"></script>
+
 
 
 <!-- Latest Sortable -->
@@ -89,9 +92,9 @@ if ($edit && $item["content"]) {
     $i = 0;
     foreach ($content as $part) {
         if ($part["type"] == "desc") {
-            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0">' . $part["text"] . '</textarea></div></div>';
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0">' . $part["text"] . '</textarea></div></div>';
         } else if ($part["type"] == "img") {
-            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><div id="files' . $i . '" class="files"><div><p><a target="_blank" href="' . $part["url"] . '"><img width="80" height="80" src=' . $part["url"] . '></img></a><br><input style="margin-top:10px" class="form-control caption" value="' . $part["caption"] . '" placeholder="Enter photo name…"></p></div></div></div></div>';
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><div id="files' . $i . '" class="files"><div><p><a target="_blank" href="' . $part["url"] . '"><img width="80" height="80" src=' . $part["url"] . '></img></a><br><input style="margin-top:10px" class="form-control caption" value="' . $part["caption"] . '" placeholder="Enter photo name…"></p></div></div></div></div>';
         }
         $i++;
     }
@@ -104,7 +107,15 @@ if ($edit && $item["content"]) {
 
     <div class="form-group">
         <label for="mp3">Audio</label>
-            <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste an MP3 link (or upload)" class="form-control" style="padding: 6px 10px" id="audio">
+        <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste a link here, or upload using a button below…" class="form-control" style="padding: 6px 10px" id="audio">
+        <span class="btn btn-success fileinput-button" style="margin-top:10px">
+        <i class="glyphicon glyphicon-plus"></i>
+        <span>Upload File…</span>
+        <!-- The file input field used as target for the file upload widget -->
+        <input id="fileupload_audio" type="file" name="file">
+     </span>
+        <div id="audio_file" class="files" style="margin-top:10px"></div>
+        <div id="progress_audio" class="progress" style="margin-bottom:10px"><div class="progress-bar progress-bar-success"></div></div>
     </div>
 
     <div class="form-group">
@@ -114,22 +125,62 @@ if ($edit && $item["content"]) {
 
 
     <script>
+$('#fileupload_audio').change(function(){
+
+$(this).simpleUpload("./ajax/upload.php", {
+
+    start: function(file){
+        //upload started
+        console.log("upload started");
+    },
+
+    progress: function(progress){
+        //received progress
+        $('#progress_audio .progress-bar').css(
+            'width',
+            progress + '%'
+        );
+    },
+
+    success: function(data){
+        //upload successful
+        $("#audio").val(data.message);
+    },
+
+    error: function(error){
+        //upload failed
+        console.log("upload error: " + error.name + ": " + error.message);
+    }
+
+});
+
+});
+
     function toggleItem(item){
         $(item).parent().find(".listHiddenContainer").toggle()
+        $(item).rotate({
+        angle: $(item).getRotateAngle(),
+        animateTo: $(item).getRotateAngle()==0?180:0,
+        duration: 150
+      });
     }
 
     function deleteItem(item){
-        $(item).parent().remove()
+        if (confirm("Do you want to delete this item?")){
+            $(item).parent().remove()
+        }
     }
 
     function addText(){
-        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-caret-down" style="float:right;padding:5px;cursor:pointer" onClick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0"></textarea></div></div>')
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0"></textarea></div></div>')
+        $("#listWithHandle").children().last().find(".fa-chevron-down").rotate(180)
     }
 
     function addPhoto(){
         var index = $("#listWithHandle").children().length;
-        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-caret-down" style="float:right;padding:5px;cursor:pointer" onClick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><span class="btn btn-success fileinput-button" id="button'+index+'"><i class="glyphicon glyphicon-plus"></i><span>&nbsp;Upload File...</span><input id="fileupload'+index+'" type="file" name="files[]" multiple></span><div id="files'+index+'" class="files"></div><div id="progress'+index+'" class="progress" style="margin-bottom:10px;display:none"><div class="progress-bar progress-bar-success"></div></div></div></div>');
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><span class="btn btn-success fileinput-button" style="margin-bottom:10px" id="button'+index+'"><i class="glyphicon glyphicon-plus"></i><span>&nbsp;Upload File...</span><input id="fileupload'+index+'" type="file" name="files[]" multiple></span><div id="files'+index+'" class="files"></div><div id="progress'+index+'" class="progress" style="margin-bottom:10px;display:none"><div class="progress-bar progress-bar-success"></div></div></div></div>');
         initUploadButton(index)
+        $("#listWithHandle").children().last().find(".fa-chevron-down").rotate(180)
     }
 
     // List with handle
@@ -141,59 +192,33 @@ if ($edit && $item["content"]) {
     var content = <?php echo $item["content"] ? $item["content"] : "[]" ?>;
     $("#content").val(JSON.stringify(content));
 
-    /*function deletePhoto($photo, $index){
-        $("#photo_wrapper"+$index).hide()
-
-        for (var i in photos) {
-            if (photos[i].url == $photo){
-                photos.splice(i, 1)
-            }
-        }
-
-        $("#photos").val(JSON.stringify(photos));
-    }*/
-
     function initUploadButton(i){
-    // Change this to the location of your server-side upload handler:
-    var url = 'file-upload/server/php/',
-        uploadButton = $('<button/>')
-            .addClass('btn btn-primary2')
-            .prop('disabled', true)
-            .prop('id', "button"+i)
-            .text('Processing...')
-            .on('click', function () {
-                var $this = $(this),
-                    data = $this.data();
-                $this
-                    .off('click')
-                    .text('Abort')
-                    .on('click', function () {
-                        $this.remove();
-                        data.abort();
-                    });
-                data.submit().always(function () {
-                    $this.remove();
-                });
-            });
+    var url = 'file-upload/server/php/'
     $('#fileupload'+i).fileupload({
         url: url,
         dataType: 'json',
         autoUpload: true,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-        maxFileSize: 999000,
+        maxFileSize: 9999000,
         imageMaxHeight: 1000,
         // Enable image resizing, except for Android and Opera,
         // which actually support image resizing, but fail to
         // send Blob objects via XHR requests:
         disableImageResize: /Android(?!.*Chrome)|Opera/
             .test(window.navigator.userAgent),
-        previewMinHeight: 1000,
+        previewMaxHeight: 1000,
         previewCrop: false
     }).on('fileuploadadd', function (e, data) {
         data.context = $('<div/>').appendTo('#files'+i);
         $.each(data.files, function (index, file) {
+            var fileName = file.name.replace(".png", "").replace(".jpg", "").replace(".jpeg", "").replace("JPG", "");
+
+            if (fileName.indexOf(")")==1 || fileName.indexOf(")")==2){
+                fileName = $.trim(fileName.substring(fileName.indexOf(")")+1));
+            }
+
             var node = $('<p/>')
-                    .append($('<input/>').attr("style", "margin-top:10px").attr("class", "form-control caption").attr("value", file.name.replace(".png", "")).attr("placeholder", "Enter photo name…"));
+                    .append($('<input/>').attr("style", "margin-top:10px").attr("class", "form-control caption").attr("value", fileName).attr("placeholder", "Enter photo name…"));
 
             node.appendTo(data.context);
         });
@@ -258,7 +283,7 @@ if ($edit && $item["content"]) {
                 if ($(this).find("#description").val()){
                     content.push({
                         type: "desc",
-                        text: $(this).find("#description").val()
+                        text: $.trim($(this).find("#description").val())
                     })
                 }
             } else {
@@ -271,9 +296,10 @@ if ($edit && $item["content"]) {
                 }
             }
         });
-        console.log(content)
         $("#content").val(JSON.stringify(content));
     }
+
+
     </script>
 
     <div class="form-group text-center">

@@ -143,7 +143,7 @@ foreach ($content as $part) {
     if ($part["type"] == "desc") {
         echo mb_strimwidth(preg_replace("/\r|\n/", " ", $part["text"]), 0, 300, "…");
     } else if ($part["type"] == "img") {
-        echo "<img src='" . $part['url'] . "' height=20/> <i>" . mb_strimwidth(preg_replace("/\r|\n/", " ", $part["caption"]), 0, 50, "…") . "</i>";
+        echo "<a href='" . $part['url'] . "'><img src='" . $part['url'] . "' height=20/></a> <i>" . mb_strimwidth(preg_replace("/\r|\n/", " ", $part["caption"]), 0, 50, "…") . "</i>";
     }
     echo " ";
 }
