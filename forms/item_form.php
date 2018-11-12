@@ -70,7 +70,7 @@ $i++;
     </div>-->
 
     <div class="form-group">
-        <label for="mp3">Content</label>
+        <label for="mp3" style="margin-top:10px">Content</label>
         <br>
         <span class="btn btn-success fileinput-button" onClick="addText()">
             <i class="glyphicon glyphicon-align-left"></i>
@@ -106,7 +106,7 @@ if ($edit && $item["content"]) {
     <input type="hidden" name="content" id="content" />
 
     <div class="form-group">
-        <label for="mp3">Audio</label>
+        <label for="mp3" style="margin-top:10px">Audio</label>
         <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste a link here, or upload using a button below…" class="form-control" style="padding: 6px 10px" id="audio">
         <span class="btn btn-success fileinput-button" style="margin-top:10px">
         <i class="glyphicon glyphicon-plus"></i>
@@ -115,12 +115,30 @@ if ($edit && $item["content"]) {
         <input id="fileupload_audio" type="file" name="file">
      </span>
         <div id="audio_file" class="files" style="margin-top:10px"></div>
-        <div id="progress_audio" class="progress" style="margin-bottom:10px"><div class="progress-bar progress-bar-success"></div></div>
+        <div id="progress_audio" class="progress" style="margin-bottom:10px; display:none"><div class="progress-bar progress-bar-success"></div></div>
     </div>
 
     <div class="form-group">
-        <label for="video">Video</label>
+        <label for="video" style="margin-top:10px">Video</label>
             <input name="video" value="<?php echo $edit ? $item['video'] : ''; ?>" placeholder="Paste a YouTube video link" class="form-control" style="padding: 6px 10px" type="text" id="video">
+    </div>
+
+    <div class="form-group">
+        <label for="video" style="margin-top:10px">Related Items</label>
+        <div id="related_items_container">
+        <?php
+// Connect to the database
+require_once "util/database.php";
+$db = new DBConnect();
+$con = $db->openConnection();
+
+$item_query = $db->makeQuery($con, "SELECT item_id, name FROM item " . ($item['item_id'] ? "WHERE item_id<>" . $item['item_id'] : null)) or die(mysqli_error($con));
+while ($item_result = mysqli_fetch_assoc($item_query)) {
+    echo '<input type="checkbox" item_id="' . $item_result["item_id"] . '" ' . (in_array($item_result["item_id"], json_decode($item["related_items"], true)) ? "checked" : null) . '><font style="margin-left:8px">' . $item_result["name"] . '</font><br>';
+}
+?>
+        </div>
+        <input type="hidden" name="related_items" id="related_items" />
     </div>
 
 
@@ -132,6 +150,7 @@ $(this).simpleUpload("./ajax/upload.php", {
     start: function(file){
         //upload started
         console.log("upload started");
+        $('#progress_audio').show()
     },
 
     progress: function(progress){
@@ -296,7 +315,16 @@ $(this).simpleUpload("./ajax/upload.php", {
                 }
             }
         });
-        $("#content").val(JSON.stringify(content));
+        $("#content").val(JSON.stringify(content))
+
+        var related_items = []
+        $("#related_items_container").children().each(function () {
+            var id = $(this).attr("item_id");
+            if (id && $(this).is(':checked')){
+                related_items.push(id)
+            }
+        });
+        $("#related_items").val(JSON.stringify(related_items))
     }
 
 

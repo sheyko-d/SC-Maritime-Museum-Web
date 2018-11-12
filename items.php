@@ -124,8 +124,9 @@ if ($order_by == 'Desc') {
         <thead>
             <tr>
                 <th class="header" style="text-align: center">#</th>
-                <th>Name</th>
+                <th style="width:150px">Name</th>
                 <th>Content</th>
+                <th style="width:110px">Related Items</th>
                 <th>Video</th>
                 <th>MP3</th>
                 <th style="text-align: center">QR Code</th>
@@ -149,6 +150,9 @@ foreach ($content as $part) {
 }
 ?>
 </td>
+                    <td style="vertical-align:middle"><?php $related_items = json_decode($row['related_items'], true);
+echo implode(", ", $related_items);
+?></td>
                     <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['video']) ? "<a href='" . htmlspecialchars($row['video']) . "' target='_blank'><img height=80 src='assets/images/video.png' style='margin-left:7px'/></a>" : null ?></td>
 	                <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='" . htmlspecialchars($row['mp3']) . "' target='_blank'><img height=80 src='assets/images/audio.png' style='margin-left:7px'/></a>" : null ?></td>
                     <?php
