@@ -126,8 +126,7 @@ if ($order_by == 'Desc') {
 <th class="header" style="width:50px; text-align: center">#</th>
                 <th style="width:auto">Name</th>
                 <th style="width:150px">Related Items</th>
-                <th style="width:100px">Video</th>
-                <th style="width:100px">MP3</th>
+                <th style="width:94px">MP3</th>
 <th style="width:100px; text-align: center">QR Code</th>
                 <th style="text-align:center; width:120px">Actions</th>
             </tr>
@@ -141,8 +140,7 @@ if ($order_by == 'Desc') {
                     <td style="vertical-align:middle; text-align: center"><?php $related_items = json_decode($row['related_items'], true);
 echo count($related_items) > 0 ? implode(", ", $related_items) : "—";
 ?></td>
-                    <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['video']) ? "<a href='" . htmlspecialchars($row['video']) . "' target='_blank'><img height=80 src='assets/images/video.png' style='margin-left:7px'/></a>" : null ?></td>
-	                <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='" . htmlspecialchars($row['mp3']) . "' target='_blank'><img height=80 src='assets/images/audio.png' style='margin-left:7px'/></a>" : null ?></td>
+                    <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='" . htmlspecialchars($row['mp3']) . "' target='_blank'><img height=74 src='assets/images/audio.png' style='margin-left:7px'/></a>" : "—" ?></td>
                     <?php
 QRCode::png('ID' . $row['item_id'], "qr/" . $row['item_id'] . ".png", "M", 10, 1);
 ?>

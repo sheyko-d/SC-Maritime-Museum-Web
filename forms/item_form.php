@@ -84,6 +84,12 @@ $i++;
             <!-- The file input field used as target for the file upload widget -->
             <input id="addtext" type="button">
         </span>
+        <span class="btn btn-success fileinput-button" onClick="addVideo()">
+            <i class="glyphicon glyphicon-film"></i>
+            <span>&nbsp;Add Video</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="addtext" type="button">
+        </span>
 
         <div id="listWithHandle" class="list-group" style="margin-top:10px">
             <?php
@@ -94,7 +100,9 @@ if ($edit && $item["content"]) {
         if ($part["type"] == "desc") {
             echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Text Area<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><textarea placeholder="Paste your text paragraph here…" class="form-control" id="description" style="height: 131px; resize:vertical; padding: 6px 10px; border-color:#e0e0e0">' . $part["text"] . '</textarea></div></div>';
         } else if ($part["type"] == "img") {
-            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><div id="files' . $i . '" class="files"><div><p><a target="_blank" href="' . $part["url"] . '"><img width="80" height="80" src=' . $part["url"] . '></img></a><br><input style="margin-top:10px" class="form-control caption" value="' . $part["caption"] . '" placeholder="Enter photo name…"></p></div></div></div></div>';
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo w/ Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><div id="files' . $i . '" class="files"><div><p><a target="_blank" href="' . $part["url"] . '"><img width="80" height="80" src=' . $part["url"] . '></img></a><br><input style="margin-top:10px; border-color:#e0e0e0" class="form-control caption" value="' . $part["caption"] . '" placeholder="Enter photo name…"></p></div></div></div></div>';
+        } else {
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Video w/ Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Paste a YouTube embed link here… (example: https://www.youtube.com/embed/Bey4XXJAqS8)" class="form-control" id="youtube" style="padding: 6px 10px; border-color:#e0e0e0" value="' . $part["url"] . '"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control caption" value="' . @$part["caption"] . '" placeholder="Enter video name…"/></div></div>';
         }
         $i++;
     }
@@ -116,11 +124,6 @@ if ($edit && $item["content"]) {
      </span>
         <div id="audio_file" class="files" style="margin-top:10px"></div>
         <div id="progress_audio" class="progress" style="margin-bottom:10px; display:none"><div class="progress-bar progress-bar-success"></div></div>
-    </div>
-
-    <div class="form-group">
-        <label for="video" style="margin-top:10px">Video</label>
-            <input name="video" value="<?php echo $edit ? $item['video'] : ''; ?>" placeholder="Paste a YouTube video link" class="form-control" style="padding: 6px 10px" type="text" id="video">
     </div>
 
     <div class="form-group">
@@ -197,8 +200,13 @@ $(this).simpleUpload("./ajax/upload.php", {
 
     function addPhoto(){
         var index = $("#listWithHandle").children().length;
-        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo /w Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><span class="btn btn-success fileinput-button" style="margin-bottom:10px" id="button'+index+'"><i class="glyphicon glyphicon-plus"></i><span>&nbsp;Upload File...</span><input id="fileupload'+index+'" type="file" name="files[]" multiple></span><div id="files'+index+'" class="files"></div><div id="progress'+index+'" class="progress" style="margin-bottom:10px;display:none"><div class="progress-bar progress-bar-success"></div></div></div></div>');
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo w/ Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><span class="btn btn-success fileinput-button" style="margin-bottom:10px" id="button'+index+'"><i class="glyphicon glyphicon-plus"></i><span>&nbsp;Upload File...</span><input id="fileupload'+index+'" type="file" name="files[]" multiple></span><div id="files'+index+'" class="files"></div><div id="progress'+index+'" class="progress" style="margin-bottom:10px;display:none"><div class="progress-bar progress-bar-success"></div></div></div></div>');
         initUploadButton(index)
+        $("#listWithHandle").children().last().find(".fa-chevron-down").rotate(180)
+    }
+
+    function addVideo(){
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Video w/ Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Paste a YouTube embed link here… (example: https://www.youtube.com/embed/Bey4XXJAqS8)" class="form-control" id="youtube" style="padding: 6px 10px; border-color:#e0e0e0"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control caption" placeholder="Enter video name…"/></div></div>')
         $("#listWithHandle").children().last().find(".fa-chevron-down").rotate(180)
     }
 
@@ -237,7 +245,7 @@ $(this).simpleUpload("./ajax/upload.php", {
             }
 
             var node = $('<p/>')
-                    .append($('<input/>').attr("style", "margin-top:10px").attr("class", "form-control caption").attr("value", fileName).attr("placeholder", "Enter photo name…"));
+                    .append($('<input/>').attr("style", "margin-top:10px; border-color:#e0e0e0").attr("class", "form-control caption").attr("value", fileName).attr("placeholder", "Enter photo name…"));
 
             node.appendTo(data.context);
         });
@@ -303,6 +311,14 @@ $(this).simpleUpload("./ajax/upload.php", {
                     content.push({
                         type: "desc",
                         text: $.trim($(this).find("#description").val())
+                    })
+                }
+            } else if ($(this).find("#youtube").length > 0){
+                if ($(this).find("#youtube").val()){
+                    content.push({
+                        type: "video",
+                        url: $.trim($(this).find("#youtube").val()),
+                        caption: $(this).find(".caption").val()
                     })
                 }
             } else {
