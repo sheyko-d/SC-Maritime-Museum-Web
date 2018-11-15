@@ -123,13 +123,12 @@ if ($order_by == 'Desc') {
     <table class="table table-striped table-bordered table-condensed">
         <thead>
             <tr>
-                <th class="header" style="text-align: center">#</th>
-                <th style="width:150px">Name</th>
-                <th>Content</th>
-                <th style="width:110px">Related Items</th>
-                <th>Video</th>
-                <th>MP3</th>
-                <th style="text-align: center">QR Code</th>
+<th class="header" style="width:50px; text-align: center">#</th>
+                <th style="width:auto">Name</th>
+                <th style="width:150px">Related Items</th>
+                <th style="width:100px">Video</th>
+                <th style="width:100px">MP3</th>
+<th style="width:100px; text-align: center">QR Code</th>
                 <th style="text-align:center; width:120px">Actions</th>
             </tr>
         </thead>
@@ -138,27 +137,16 @@ if ($order_by == 'Desc') {
                 <tr>
 	                <td style="vertical-align:middle; text-align: center"><?php echo $row['item_id'] ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['name']) ?></td>
-                    <td style="vertical-align:middle"><?php
-$content = json_decode($row['content'], true);
-foreach ($content as $part) {
-    if ($part["type"] == "desc") {
-        echo mb_strimwidth(preg_replace("/\r|\n/", " ", $part["text"]), 0, 300, "…");
-    } else if ($part["type"] == "img") {
-        echo "<a href='" . $part['url'] . "'><img src='" . $part['url'] . "' height=20/></a> <i>" . mb_strimwidth(preg_replace("/\r|\n/", " ", $part["caption"]), 0, 50, "…") . "</i>";
-    }
-    echo " ";
-}
-?>
-</td>
-                    <td style="vertical-align:middle"><?php $related_items = json_decode($row['related_items'], true);
-echo implode(", ", $related_items);
+
+                    <td style="vertical-align:middle; text-align: center"><?php $related_items = json_decode($row['related_items'], true);
+echo count($related_items) > 0 ? implode(", ", $related_items) : "—";
 ?></td>
                     <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['video']) ? "<a href='" . htmlspecialchars($row['video']) . "' target='_blank'><img height=80 src='assets/images/video.png' style='margin-left:7px'/></a>" : null ?></td>
 	                <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='" . htmlspecialchars($row['mp3']) . "' target='_blank'><img height=80 src='assets/images/audio.png' style='margin-left:7px'/></a>" : null ?></td>
                     <?php
 QRCode::png('ID' . $row['item_id'], "qr/" . $row['item_id'] . ".png", "M", 10, 1);
 ?>
-                    <td style="text-align: center; vertical-align:middle; padding: 5px"><a href="qr/<?php echo $row['item_id'] ?>.png"><img width="80" height="80" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
+                    <td style="text-align: center; vertical-align:middle; padding: 5px"><a href="qr/<?php echo $row['item_id'] ?>.png" target="_blank"><img width="80" height="80" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
 	                <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
 					<a href="edit_item.php?item_id=<?php echo $row['item_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
 
