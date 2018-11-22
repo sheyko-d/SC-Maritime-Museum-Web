@@ -19,10 +19,10 @@ if ($_FILES["file"]["size"] > 500000) {
     $success = false;
 }
 // Allow certain file formats
-if ($imageFileType != "mp3" && $imageFileType != "m4a") {
-    $error = "Sorry, only mp3 and m4a files are allowed.";
-    $success = false;
-}
+/*if ($imageFileType != "mp3" && $imageFileType != "m4a") {
+$error = "Sorry, only mp3 and m4a files are allowed.";
+$success = false;
+}*/
 // Upload the file
 if ($success) {
     if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {

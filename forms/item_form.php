@@ -1,3 +1,6 @@
+<?php ini_set('post_max_size', '1000M');
+ini_set('upload_max_filesize', '1000M');?>
+
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="file-upload/css/jquery.fileupload.css">
 
@@ -102,7 +105,7 @@ if ($edit && $item["content"]) {
         } else if ($part["type"] == "img") {
             echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Photo w/ Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: -5px"><div id="files' . $i . '" class="files"><div><p><a target="_blank" href="' . $part["url"] . '"><img width="80" height="80" src=' . $part["url"] . '></img></a><br><input style="margin-top:10px; border-color:#e0e0e0" class="form-control caption" value="' . $part["caption"] . '" placeholder="Enter photo name…"></p></div></div></div></div>';
         } else {
-            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Video w/ Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Paste a YouTube embed link here… (example: https://www.youtube.com/embed/Bey4XXJAqS8)" class="form-control" id="youtube" style="padding: 6px 10px; border-color:#e0e0e0" value="' . $part["url"] . '"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control caption" value="' . @$part["caption"] . '" placeholder="Enter video name…"/></div></div>';
+            echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Video w/ Caption<div class="listHiddenContainer" style="display:none; margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Or paste a YouTube embed link here… (example: https://www.youtube.com/embed/Bey4XXJAqS8)" class="form-control youtube" id="youtube' . $i . '" style="padding: 6px 10px; border-color:#e0e0e0" value="' . $part["url"] . '"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control caption" value="' . @$part["caption"] . '" placeholder="Enter video name…"/></div></div>';
         }
         $i++;
     }
@@ -165,12 +168,23 @@ $(this).simpleUpload("./ajax/upload.php", {
     },
 
     success: function(data){
-        //upload successful
-        $("#audio").val(data.message);
+        if (data.success){
+            // Upload successful
+            $("#audio").val(data.message);
+        } else {
+            // Upload failed
+            $('#progress_audio .progress-bar').css(
+                'width',
+                '0%'
+            );
+            $('#progress_audio').hide()
+            alert("Upload error: " + data.error);
+        }
     },
 
     error: function(error){
         //upload failed
+        alert("Upload failed")
         console.log("upload error: " + error.name + ": " + error.message);
     }
 
@@ -206,7 +220,9 @@ $(this).simpleUpload("./ajax/upload.php", {
     }
 
     function addVideo(){
-        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Video w/ Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Paste a YouTube embed link here… (example: https://www.youtube.com/embed/Bey4XXJAqS8)" class="form-control" id="youtube" style="padding: 6px 10px; border-color:#e0e0e0"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control caption" placeholder="Enter video name…"/></div></div>')
+        var index = $("#listWithHandle").children().length;
+        $("#listWithHandle").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>Video w/ Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><span class="btn btn-success fileinput-button" style="margin-bottom:10px" id="button_video'+index+'"><i class="glyphicon glyphicon-plus"></i><span>&nbsp;Upload File...</span><input id="fileupload_video'+index+'" type="file" name="file"></span><div id="files_video'+index+'" class="files"></div><div id="progress_video'+index+'" class="progress" style="margin-bottom:10px;display:none"><div class="progress-bar progress-bar-success"></div></div><input type="text" placeholder="Or paste a YouTube embed link here… (example: https://www.youtube.com/embed/Bey4XXJAqS8)" class="form-control youtube" id="youtube'+index+'" style="padding: 6px 10px; border-color:#e0e0e0"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control caption" id="youtube_name'+index+'" placeholder="Enter video name…"/></div></div>')
+        initVideoUploadButton(index)
         $("#listWithHandle").children().last().find(".fa-chevron-down").rotate(180)
     }
 
@@ -218,6 +234,56 @@ $(this).simpleUpload("./ajax/upload.php", {
 
     var content = <?php echo $item["content"] ? $item["content"] : "[]" ?>;
     $("#content").val(JSON.stringify(content));
+
+    function initVideoUploadButton(i){
+
+        var video_name;
+        $('#fileupload_video'+i).change(function(){
+
+$(this).simpleUpload("./ajax/upload_video.php", {
+
+    start: function(file){
+        video_name = file.name;
+
+        //upload started
+        console.log("upload started");
+        $('#progress_video'+i).show()
+    },
+
+    progress: function(progress){
+        //received progress
+        $('#progress_video'+i+' .progress-bar').css(
+            'width',
+            progress + '%'
+        );
+    },
+
+    success: function(data){
+        if (data.success){
+            // Upload successful
+            $("#youtube"+i).val(data.message);
+            $("#youtube_name"+i).val(video_name.replace(".mp4", "").replace(".avi", "").replace(".mov", "").replace("mpg", "").replace("mpeg", "").replace("mkv", ""));
+        } else {
+            // Upload failed
+            $('#progress_video'+i+' .progress-bar').css(
+                'width',
+                '0%'
+            );
+            $('#progress_video'+i).hide()
+            alert("Upload error: " + data.error);
+        }
+    },
+
+    error: function(error){
+        //upload failed
+        alert("Upload failed")
+        console.log("upload error: " + error.name + ": " + error.message);
+    }
+
+});
+
+});
+    }
 
     function initUploadButton(i){
     var url = 'file-upload/server/php/'
@@ -313,11 +379,11 @@ $(this).simpleUpload("./ajax/upload.php", {
                         text: $.trim($(this).find("#description").val())
                     })
                 }
-            } else if ($(this).find("#youtube").length > 0){
-                if ($(this).find("#youtube").val()){
+            } else if ($(this).find(".youtube").length > 0){
+                if ($(this).find(".youtube").val()){
                     content.push({
                         type: "video",
-                        url: $.trim($(this).find("#youtube").val()),
+                        url: $.trim($(this).find(".youtube").val()),
                         caption: $(this).find(".caption").val()
                     })
                 }
