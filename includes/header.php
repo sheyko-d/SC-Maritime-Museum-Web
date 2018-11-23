@@ -28,7 +28,7 @@
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
-        <script src="js/jquery.min.js" type="text/javascript"></script> 
+        <script src="js/jquery.min.js" type="text/javascript"></script>
 
     </head>
 
@@ -37,7 +37,7 @@
         <div id="wrapper">
 
             <!-- Navigation -->
-            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] == true ) : ?>
+            <?php if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] == true): ?>
                 <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -46,7 +46,7 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="">Administrator</a>
+                        <a class="navbar-brand" href=""><img src="assets/images/logo.png" height="27" style="margin-top:-3px"/></a>
                     </div>
                     <!-- /.navbar-header -->
 
@@ -80,7 +80,7 @@
                                     <a href="index.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                                 </li>
 
-                                <li <?php echo (CURRENT_PAGE =="items.php" || CURRENT_PAGE=="add_item.php") ? 'class="active"' : '' ; ?>>
+                                <li <?php echo (CURRENT_PAGE == "items.php" || CURRENT_PAGE == "add_item.php") ? 'class="active"' : ''; ?>>
                                     <a href="#"><i class="fa fa-search fa-fw"></i> Items<span class="fa arrow"></span></a>
                                     <ul class="nav nav-second-level">
                                         <li>
@@ -100,5 +100,5 @@
                     </div>
                     <!-- /.navbar-static-side -->
                 </nav>
-            <?php endif; ?>
+            <?php endif;?>
             <!-- The End of the Header -->
