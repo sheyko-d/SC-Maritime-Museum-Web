@@ -140,12 +140,44 @@ $con = $db->openConnection();
 
 $item_query = $db->makeQuery($con, "SELECT item_id, name FROM item " . ($item['item_id'] ? "WHERE item_id<>" . $item['item_id'] : null)) or die(mysqli_error($con));
 while ($item_result = mysqli_fetch_assoc($item_query)) {
-    echo '<input type="checkbox" item_id="' . $item_result["item_id"] . '" ' . (in_array($item_result["item_id"], json_decode($item["related_items"], true)) ? "checked" : null) . '><font style="margin-left:8px">' . $item_result["name"] . '</font><br>';
+    echo '<input type="checkbox" item_id="' . $item_result["item_id"] . '" ' . (in_array($item_result["item_id"], json_decode($item["related_items"] ? $item["related_items"] : "[]", true)) ? "checked" : null) . '><font style="margin-left:8px">' . $item_result["name"] . '</font><br>';
 }
 ?>
         </div>
+
         <input type="hidden" name="related_items" id="related_items" />
+
+        <input type="hidden" name="references" id="references" />
     </div>
+
+
+
+
+
+    <div class="form-group">
+        <label for="mp3" style="margin-top:10px">External References</label>
+        <br>
+        <span class="btn btn-success fileinput-button" onClick="addLink()">
+            <i class="glyphicon glyphicon-link" style="margin-top:2px;margin-left:-2px"></i>
+            <span>&nbsp;Add Link</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="addtext" type="button">
+        </span>
+
+        <div id="listWithHandleLinks" class="list-group" style="margin-top:10px">
+            <?php
+if ($edit && $item["references"]) {
+    $references = json_decode($item["references"], true);
+    $i = 0;
+    foreach ($references as $part) {
+        echo '<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>External Link w/ Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Paste the URL here…" class="form-control url" value="' . $part["url"] . '" style="padding: 6px 10px; border-color:#e0e0e0"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control url_title" id="url_title" placeholder="Enter a link title…" value="' . $part["url_title"] . '"/></div></div>';
+        $i++;
+    }
+}
+?>
+        </div>
+    </div>
+
 
 
     <script>
@@ -226,14 +258,31 @@ $(this).simpleUpload("./ajax/upload.php", {
         $("#listWithHandle").children().last().find(".fa-chevron-down").rotate(180)
     }
 
+    function addLink(){
+        var index = $("#listWithHandleLinks").children().length;
+        $("#listWithHandleLinks").append('<div class="list-group-item" style="user-select:none"><i class="fa fa-times" style="float:right;padding:3px;cursor:pointer" onclick="deleteItem(this)"></i><i class="fa fa-chevron-down" style="float:right;padding:3px;margin-right:10px; cursor:pointer" onclick="toggleItem(this)"></i><span class="drag-handle" aria-hidden="true" style="margin-right:12px; cursor:move">☰</span>External Link w/ Caption<div class="listHiddenContainer" style="margin-left: 25px; margin-top: 10px; margin-bottom: 5px"><input type="text" placeholder="Paste the URL here…" class="form-control url" id="url'+index+'" style="padding: 6px 10px; border-color:#e0e0e0"/><input style="margin-top:10px;border-color:#e0e0e0" type="text" class="form-control url_title" id="url_title'+index+'" placeholder="Enter a link title…"/></div></div>')
+        $("#listWithHandleLinks").children().last().find(".fa-chevron-down").rotate(180)
+
+        addUrlListener()
+    }
+
     // List with handle
     Sortable.create(listWithHandle, {
         handle: '.drag-handle',
         animation: 150
     });
 
+// List with handle
+Sortable.create(listWithHandleLinks, {
+    handle: '.drag-handle',
+    animation: 150
+});
+
     var content = <?php echo $item["content"] ? $item["content"] : "[]" ?>;
     $("#content").val(JSON.stringify(content));
+
+    var references = <?php echo $item["references"] ? $item["references"] : "[]" ?>;
+    $("#references").val(JSON.stringify(references));
 
     function initVideoUploadButton(i){
 
@@ -368,6 +417,24 @@ $(this).simpleUpload("./ajax/upload_video.php", {
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
     }
 
+    addUrlListener()
+    function addUrlListener(){
+        $(".url").change(function(){
+            var proxyurl = "get_external_content.php?url=" + $(this).val()
+            var input = $(this)
+            $.ajax({
+                url: proxyurl,
+                async: true,
+                success: function(response) {
+                    input.parent().find(".url_title").val(JSON.parse(response).title)
+                },
+                error: function(e) {
+                alert("error! " + e);
+                }
+            });
+        })
+    }
+
     function submitForm(){
         var content = []
         $("#listWithHandle").children().each(function () {
@@ -399,6 +466,23 @@ $(this).simpleUpload("./ajax/upload_video.php", {
         });
         $("#content").val(JSON.stringify(content))
 
+        var references = []
+        $("#listWithHandleLinks").children().each(function () {
+            if ($(this).find(".url").length > 0){
+                if ($(this).find(".url").val()){
+                    if (ValidURL($.trim($(this).find(".url").val()))){
+                        references.push({
+                            url: $.trim($(this).find(".url").val()),
+                            url_title: $.trim($(this).find(".url_title").val())
+                        })
+                    } else {
+                        alert("URL is invalid and will not be saved.")
+                    }
+                }
+            }
+        });
+        $("#references").val(JSON.stringify(references))
+
         var related_items = []
         $("#related_items_container").children().each(function () {
             var id = $(this).attr("item_id");
@@ -409,6 +493,14 @@ $(this).simpleUpload("./ajax/upload_video.php", {
         $("#related_items").val(JSON.stringify(related_items))
     }
 
+    function ValidURL(str) {
+        var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+        if (pattern.test(str)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     </script>
 
