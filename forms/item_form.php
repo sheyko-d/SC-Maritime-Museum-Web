@@ -420,16 +420,18 @@ $(this).simpleUpload("./ajax/upload_video.php", {
     addUrlListener()
     function addUrlListener(){
         $(".url").change(function(){
+            $('html, body').css("cursor", "wait");
+
             var proxyurl = "get_external_content.php?url=" + $(this).val()
             var input = $(this)
+            input.parent().find("input").css("cursor", "wait");
             $.ajax({
                 url: proxyurl,
                 async: true,
                 success: function(response) {
                     input.parent().find(".url_title").val(JSON.parse(response).title)
-                },
-                error: function(e) {
-                alert("error! " + e);
+                    input.parent().find("input").css("cursor", "auto");
+                    $('html, body').css("cursor", "auto");
                 }
             });
         })
