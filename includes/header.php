@@ -94,6 +94,17 @@
                                 <li>
                                     <a href="admin_users.php"><i class="fa fa-users fa-fw"></i> Admins</a>
                                 </li>
+                                <li <?php echo (CURRENT_PAGE == "notifications.php" || CURRENT_PAGE == "add_notification.php") ? 'class="active"' : ''; ?>>
+                                    <a href="#"><i class="fa fa-bell fa-fw"></i> Notifications<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level">
+                                        <li>
+                                            <a href="notifications.php"><i class="fa fa-list fa-fw"></i> List all</a>
+                                        </li>
+                                    <li>
+                                        <a href="add_notification.php"><i class="fa fa-plus fa-fw"></i> Add New</a>
+                                    </li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                         <!-- /.sidebar-collapse -->

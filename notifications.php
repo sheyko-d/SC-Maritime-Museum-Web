@@ -24,7 +24,7 @@ if (!$page) {
 
 // If filter types are not selected we show latest created data first
 if (!$filter_col) {
-    $filter_col = "item_id";
+    $filter_col = "notification_id";
 }
 $filter_col = $filter_col;
 if (!$order_by) {
@@ -33,25 +33,25 @@ if (!$order_by) {
 
 //Get DB instance. i.e instance of MYSQLiDB Library
 $db = getDbInstance();
-$select = array('item_id', 'name', 'content', 'related_items', 'mp3', 'video', 'item.references');
+$select = array('notification_id', 'title', 'message', 'time');
 
 //Start building query according to input parameters.
 // If search string
 if ($search_string) {
-    $db->where('name', '%' . $search_string . '%', 'like');
-    $db->orwhere('content', '%' . $search_string . '%', 'like');
+    $db->where('title', '%' . $search_string . '%', 'like');
+    $db->orwhere('message', '%' . $search_string . '%', 'like');
 }
 
 //If order by option selected
 if ($order_by) {
-    $db->orderBy("item." . $filter_col, $order_by);
+    $db->orderBy("notification." . $filter_col, $order_by);
 }
 
 //Set pagination limit
 $db->pageLimit = $pagelimit;
 
 //Get result of the query.
-$items = $db->arraybuilder()->paginate("item", $page, $select);
+$items = $db->arraybuilder()->paginate("notification", $page, $select);
 $total_pages = $db->totalPages;
 
 // get columns for order filter
@@ -70,7 +70,7 @@ include_once 'includes/header.php';
     <div class="row">
 
         <div class="col-lg-6">
-            <h1 class="page-header">Items</h1>
+            <h1 class="page-header">Notifications</h1>
         </div>
         <div class="col-lg-6" style="">
             <div class="page-action-links text-right">
@@ -124,37 +124,29 @@ if ($order_by == 'Desc') {
         <thead>
             <tr>
 <th class="header" style="width:50px; text-align: center">#</th>
-                <th style="width:auto">Name</th>
-                <th style="width:150px">Related Items</th>
-                <th style="width:94px">MP3</th>
-<th style="width:100px; text-align: center">QR Code</th>
+                <th style="width:auto">Title</th>
+                <th style="width:auto">Message</th>
+                <th style="width:200px">Date</th>
                 <th style="text-align:center; width:120px">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($items as $row): ?>
                 <tr>
-	                <td style="vertical-align:middle; text-align: center"><?php echo $row['item_id'] ?></td>
-	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['name']) ?></td>
-
-                    <td style="vertical-align:middle; text-align: center"><?php $related_items = json_decode($row['related_items'], true);
-echo count($related_items) > 0 ? implode(", ", $related_items) : "—";
-?></td>
-                    <td style="vertical-align:middle; text-align: center; padding: 10px 10px 10px 3px"><?php echo htmlspecialchars($row['mp3']) ? "<a href='" . htmlspecialchars($row['mp3']) . "' target='_blank'><img height=74 src='assets/images/audio.png' style='margin-left:7px'/></a>" : "—" ?></td>
-                    <?php
-QRCode::png('ID' . $row['item_id'], "qr/" . $row['item_id'] . ".png", "M", 10, 1);
-?>
-                    <td style="text-align: center; vertical-align:middle; padding: 5px"><a href="qr/<?php echo $row['item_id'] ?>.png" target="_blank"><img width="80" height="80" src="qr/<?php echo $row['item_id'] ?>.png" /></a></td>
-	                <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
-					<a href="edit_item.php?item_id=<?php echo $row['item_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
-
-					<a href=""  class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['item_id'] ?>" style="margin-right: 8px;"><span class="glyphicon glyphicon-trash"></span></td>
+	                <td style="vertical-align:middle; text-align: center"><?php echo $row['notification_id'] ?></td>
+	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['title']) ?></td>
+	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['message']) ?></td>
+	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['time']) ?></td>
+                    <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
+                        <a href="edit_notification.php?notification_id=<?php echo $row['notification_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
+                        <a href=""  class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['notification_id'] ?>" style="margin-right: 8px;"><span class="glyphicon glyphicon-trash"></span>
+                    </td>
 				</tr>
 
 						<!-- Delete Confirmation Modal-->
-					 <div class="modal fade" id="confirm-delete-<?php echo $row['item_id'] ?>" role="dialog">
+					 <div class="modal fade" id="confirm-delete-<?php echo $row['notification_id'] ?>" role="dialog">
 					    <div class="modal-dialog">
-					      <form action="delete_item.php" method="POST">
+					      <form action="delete_notification.php" method="POST">
 					      <!-- Modal content-->
 						      <div class="modal-content">
 						        <div class="modal-header">
@@ -163,9 +155,9 @@ QRCode::png('ID' . $row['item_id'], "qr/" . $row['item_id'] . ".png", "M", 10, 1
 						        </div>
 						        <div class="modal-body">
 
-						        		<input type="hidden" name="del_id" id = "del_id" value="<?php echo $row['item_id'] ?>">
+						        		<input type="hidden" name="del_id" id = "del_id" value="<?php echo $row['notification_id'] ?>">
 
-						          <p>Are you sure you want to delete this item?</p>
+						          <p>Are you sure you want to delete this notification?</p>
 						        </div>
 						        <div class="modal-footer">
 						        	<button type="submit" class="btn btn-default pull-left">Yes</button>
