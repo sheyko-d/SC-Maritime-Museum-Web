@@ -5,7 +5,6 @@ error_reporting(E_ALL);?>
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="file-upload/css/jquery.fileupload.css">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="file-upload/js/vendor/jquery.ui.widget.js"></script>
 <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
@@ -30,6 +29,7 @@ error_reporting(E_ALL);?>
 <script src="file-upload/js/jquery.fileupload-validate.js"></script>
 <script src="js/jQueryRotate.js"></script>
 <script src="js/simpleUpload.min.js"></script>
+<script src="https://unpkg.com/moment"></script>
 
 
 
@@ -40,7 +40,6 @@ error_reporting(E_ALL);?>
 <link href="../datetimepicker/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="../datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
 
-<script type="text/javascript" src="../datetimepicker/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
 <script type="text/javascript" src="../datetimepicker/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../datetimepicker/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
 <script type="text/javascript" src="../datetimepicker/js/locales/bootstrap-datetimepicker.fr.js" charset="UTF-8"></script>
@@ -72,11 +71,13 @@ error_reporting(E_ALL);?>
 
         <div class="form-group">
             <div class="input-group date form_datetime col-md-5" data-date="1979-09-16T05:25:07Z" data-date-format="dd MM yyyy - HH:ii p" data-link-field="dtp_input1">
-                <input style="background:white" class="form-control" size="16" type="text" value="" name="time" readonly>
+                <input onchange="parseDate()" style="background:white" class="form-control" id="date" size="16" type="text" value="" readonly>
                 <span style="background:white" class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
             </div>
 			<input type="hidden" id="dtp_input1" value="" />
         </div>
+        <input type="hidden" name="time" id="time"/>
+
     </div>
 
     </fieldset>
@@ -93,26 +94,40 @@ error_reporting(E_ALL);?>
 		forceParse: 0,
         showMeridian: 1,
         pickerPosition: "bottom-left"
-    }).on('dp.change', function(e) {
-             alert(e.date.unix());
- });;
-    window.onload = function () { $('.form_datetime').datetimepicker('update', new Date().addHours(1)) }
+    });
+    window.onload = function () {
+        let date
+        if (!"<?php echo $item["time"] ?>"){
+            date = new Date()
+            date.addHours(1)
+            date.setSeconds(0)
+        } else {
+            date = new Date(<?php echo $item["time"] ? $item["time"] : "" ?>)
+        }
+
+        $('.form_datetime').datetimepicker('update', date)
+        if ("<?php echo $item["time"] ?>"){
+            $("#time").val(<?php echo $item["time"] ?>)
+        } else {
+            parseDate()
+        }
+    }
 
     Date.prototype.addHours= function(h){
         this.setHours(this.getHours()+h);
         return this;
     }
 
-    //var content = <?php echo $item["content"] ? $item["content"] : "[]" ?>;
-    //$("#content").val(JSON.stringify(content));
-
-    function submitForm(){
+    function parseDate(){
+        let date = $("#date").val()
+        let timestamp = moment(date, 'DD MMMM gg hh:mm aa').valueOf()
+        $("#time").val(timestamp)
     }
 
     </script>
 
     <div class="form-group text-center">
         <label></label>
-        <button type="submit" onClick="submitForm()" class="btn btn-warning" >Save <span class="glyphicon glyphicon-send"></span></button>
+        <button type="submit" class="btn btn-warning" >Save <span class="glyphicon glyphicon-send"></span></button>
     </div>
 </fieldset>

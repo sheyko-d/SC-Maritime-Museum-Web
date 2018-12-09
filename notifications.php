@@ -4,6 +4,8 @@ session_start();
 require_once './config/config.php';
 require_once 'includes/auth_validate.php';
 
+date_default_timezone_set('US/Eastern');
+
 //Include the QR library
 include 'phpqrcode/qrlib.php';
 
@@ -74,7 +76,7 @@ include_once 'includes/header.php';
         </div>
         <div class="col-lg-6" style="">
             <div class="page-action-links text-right">
-	            <a href="add_item.php?operation=create">
+	            <a href="add_notification.php?operation=create">
 	            	<button class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Add new </button>
 	            </a>
             </div>
@@ -126,7 +128,7 @@ if ($order_by == 'Desc') {
 <th class="header" style="width:50px; text-align: center">#</th>
                 <th style="width:auto">Title</th>
                 <th style="width:auto">Message</th>
-                <th style="width:200px">Date</th>
+                <th style="width:230px">Date</th>
                 <th style="text-align:center; width:120px">Actions</th>
             </tr>
         </thead>
@@ -136,7 +138,7 @@ if ($order_by == 'Desc') {
 	                <td style="vertical-align:middle; text-align: center"><?php echo $row['notification_id'] ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['title']) ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['message']) ?></td>
-	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['time']) ?></td>
+	                <td style="vertical-align:middle"><?php echo date('j F Y - h:i a', $row['time'] / 1000); ?></td>
                     <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
                         <a href="edit_notification.php?notification_id=<?php echo $row['notification_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
                         <a href=""  class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['notification_id'] ?>" style="margin-right: 8px;"><span class="glyphicon glyphicon-trash"></span>
