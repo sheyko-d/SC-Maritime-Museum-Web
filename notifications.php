@@ -67,6 +67,9 @@ foreach ($items as $value) {
 include_once 'includes/header.php';
 ?>
 
+
+<script src="https://unpkg.com/moment"></script>
+
 <!--Main container start-->
 <div id="page-wrapper">
     <div class="row">
@@ -138,7 +141,7 @@ if ($order_by == 'Desc') {
 	                <td style="vertical-align:middle; text-align: center"><?php echo $row['notification_id'] ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['title']) ?></td>
 	                <td style="vertical-align:middle"><?php echo htmlspecialchars($row['message']) ?></td>
-	                <td style="vertical-align:middle"><?php echo date('j F Y - h:i a', $row['time'] / 1000); ?></td>
+	                <td style="vertical-align:middle" class="date_row"><?php echo $row['time'] / 1000 ?></td>
                     <td style="text-align: center; padding: 5px 0px 5px 7px; vertical-align:middle">
                         <a href="edit_notification.php?notification_id=<?php echo $row['notification_id'] ?>&operation=edit" class="btn btn-primary" style="margin-right: 8px;"><span class="glyphicon glyphicon-edit"></span>
                         <a href=""  class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['notification_id'] ?>" style="margin-right: 8px;"><span class="glyphicon glyphicon-trash"></span>
@@ -204,6 +207,14 @@ if ($total_pages > 1) {
 </div>
 <!--Main container end-->
 
+<script>
+
+    $(document).ready(function() {
+        $(".date_row").each(function() {
+            $(this).html(moment.unix($(this).html()).format("DD MMMM YYYY hh:mm a"));
+        });
+    });
+</script>
+
 
 <?php include_once './includes/footer.php';?>
-

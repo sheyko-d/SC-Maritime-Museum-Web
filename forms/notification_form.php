@@ -77,6 +77,7 @@ error_reporting(E_ALL);?>
 			<input type="hidden" id="dtp_input1" value="" />
         </div>
         <input type="hidden" name="time" id="time"/>
+        <input type="hidden" name="sent" value="0"/>
 
     </div>
 
@@ -120,7 +121,7 @@ error_reporting(E_ALL);?>
 
     function parseDate(){
         let date = $("#date").val()
-        let timestamp = moment(date, 'DD MMMM gg hh:mm aa').valueOf()
+        let timestamp = moment(date, 'DD MMMM YYYY hh:mm a').valueOf()
         $("#time").val(timestamp)
     }
 
