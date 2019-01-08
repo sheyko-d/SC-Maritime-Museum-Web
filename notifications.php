@@ -131,7 +131,7 @@ if ($order_by == 'Desc') {
 <th class="header" style="width:50px; text-align: center">#</th>
                 <th style="width:auto">Title</th>
                 <th style="width:auto">Message</th>
-                <th style="width:230px">Date</th>
+                <th style="width:230px">Date & Time</th>
                 <th style="text-align:center; width:120px">Actions</th>
             </tr>
         </thead>

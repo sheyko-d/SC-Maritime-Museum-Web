@@ -50,7 +50,8 @@ ini_set('upload_max_filesize', '1000M');?>
 <fieldset>
     <div class="form-group">
         <label for="f_name">Name *</label>
-          <input type="text" name="name" value="<?php echo $edit ? $item['name'] : ''; ?>" placeholder="Name" class="form-control" style="padding: 6px 10px" required="required" id = "f_name" >
+        <input type="text" name="name" value="<?php echo $edit ? $item['name'] : ''; ?>" placeholder="Name" class="form-control"
+            style="padding: 6px 10px" required="required" id="f_name">
     </div>
 
     <!--<div class="form-group" style="display:none">
@@ -118,21 +119,24 @@ if ($edit && $item["content"]) {
 
     <div class="form-group">
         <label for="mp3" style="margin-top:10px">Audio</label>
-        <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste a link here, or upload using a button below…" class="form-control" style="padding: 6px 10px" id="audio">
+        <input type="text" name="mp3" value="<?php echo $edit ? $item['mp3'] : ''; ?>" placeholder="Paste a link here, or upload using a button below…"
+            class="form-control" style="padding: 6px 10px" id="audio">
         <span class="btn btn-success fileinput-button" style="margin-top:10px">
-        <i class="glyphicon glyphicon-plus"></i>
-        <span>Upload File…</span>
-        <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload_audio" type="file" name="file">
-     </span>
+            <i class="glyphicon glyphicon-plus"></i>
+            <span>Upload File…</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="fileupload_audio" type="file" name="file">
+        </span>
         <div id="audio_file" class="files" style="margin-top:10px"></div>
-        <div id="progress_audio" class="progress" style="margin-bottom:10px; display:none"><div class="progress-bar progress-bar-success"></div></div>
+        <div id="progress_audio" class="progress" style="margin-bottom:10px; display:none">
+            <div class="progress-bar progress-bar-success"></div>
+        </div>
     </div>
 
     <div class="form-group">
         <label for="video" style="margin-top:10px">Related Items</label>
         <div id="related_items_container">
-        <?php
+            <?php
 // Connect to the database
 require_once "util/database.php";
 $db = new DBConnect();
@@ -148,6 +152,8 @@ while ($item_result = mysqli_fetch_assoc($item_query)) {
         <input type="hidden" name="related_items" id="related_items" />
 
         <input type="hidden" name="references" id="references" />
+
+        <input type="hidden" name="exit" id="exit" />
     </div>
 
 
@@ -181,7 +187,7 @@ if ($edit && $item["references"]) {
 
 
     <script>
-$('#fileupload_audio').change(function(){
+        $('#fileupload_audio').change(function(){
 
 $(this).simpleUpload("./ajax/upload.php", {
 
@@ -437,6 +443,10 @@ $(this).simpleUpload("./ajax/upload_video.php", {
         })
     }
 
+    function setExit(exit){
+        $("#exit").val(exit)
+    }
+
     function submitForm(){
         var content = []
         $("#listWithHandle").children().each(function () {
@@ -506,8 +516,11 @@ $(this).simpleUpload("./ajax/upload_video.php", {
 
     </script>
 
-    <div class="form-group text-center">
+    <div class="form-group" style="margin-left:-4px; padding-top:20px">
         <label></label>
-        <button type="submit" onClick="submitForm()" class="btn btn-warning" >Save <span class="glyphicon glyphicon-send"></span></button>
+        <button type="submit" onClick="setExit('false'); submitForm()" class="btn btn-warning">Save &amp; Continue
+            Editing</button>
+        <button type="submit" onClick="setExit('true'); submitForm()" class="btn btn-warning" style="margin-left:5px">Save
+            &amp; Exit</button>
     </div>
 </fieldset>

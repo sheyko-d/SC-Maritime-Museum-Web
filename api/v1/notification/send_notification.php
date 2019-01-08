@@ -19,9 +19,9 @@ $notification_query = $db->makeQuery($con, "SELECT notification_id, title, messa
 $notifications = array();
 while ($notification_result = mysqli_fetch_assoc($notification_query)) {
     if (abs(time() - $notification_result["time"] / 1000) <= 60) {
-        if ($notification_result["time"] / 1000 - time() > 0) {
-            sleep($notification_result["time"] / 1000 - time());
-        }
+        //if ($notification_result["time"] / 1000 - time() > 0) {
+            //sleep($notification_result["time"] / 1000 - time());
+        //}
         sendFCM($notification_result["title"], $notification_result["message"], $tokens);
 
         $notification_id = $notification_result['notification_id'];
@@ -35,6 +35,12 @@ function sendFCM($title, $body, $tokens)
     $fields = array(
         'registration_ids' => $tokens,
         'notification' => array(
+            "body" => $body,
+            "title" => $title,
+            "icon" => "new",
+            "sound" => "default"
+        ),
+        'data' => array(
             "body" => $body,
             "title" => $title,
         ),

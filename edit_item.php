@@ -23,9 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data_to_update = filter_input_array(INPUT_POST);
     $db = getDbInstance();
     $db->where('item_id', $item_id);
+    $exit = $data_to_update["exit"];
+    unset($data_to_update["exit"]);
+
     $stat = $db->update('item', $data_to_update);
 
-    if ($stat) {
+    if ($stat && $exit == "true") {
         $_SESSION['success'] = "Item updated successfully!";
         //Redirect to the listing page,
         header('location: items.php');
